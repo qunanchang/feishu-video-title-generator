@@ -1,0 +1,33 @@
+{
+  "name": "video-name-generator-field",
+  "version": "1.0.0",
+  "description": "千川视频名称生成器 - 飞书多维表格字段捷径插件",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "npx @lark-opdev/block-basekit-server-api start",
+    "pack": "npx @lark-opdev/block-basekit-server-api pack",
+    "build": "tsc",
+    "dev": "npm run start"
+  },
+  "keywords": [
+    "lark",
+    "feishu",
+    "bitable",
+    "field",
+    "video",
+    "name",
+    "generator"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@lark-opdev/block-basekit-server-api": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.0",
+    "@types/node": "^18.0.0"
+  },
+  "engines": {
+    "node": ">=14.16.0"
+  }
+}

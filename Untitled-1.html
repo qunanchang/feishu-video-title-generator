@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>千川视频名称生成器</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 30px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: 2.2em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .form-section {
+            padding: 30px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.95em;
+        }
+        .required {
+            color: #e74c3c;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            background-color: #fafbfc;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .input-valid {
+            border-color: #28a745 !important;
+            background-color: #f8fff9 !important;
+        }
+        .input-invalid {
+            border-color: #dc3545 !important;
+            background-color: #fff5f5 !important;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .checkbox-group {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .checkbox-group label {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 8px;
+            font-weight: normal;
+            color: #495057;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .checkbox-group label:hover {
+            background-color: #e9ecef;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        .checkbox-group input[type="checkbox"]:checked + span {
+            color: #667eea;
+            font-weight: 600;
+        }
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+        .btn-secondary:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .preview-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px 30px;
+            color: white;
+            margin-top: 20px;
+        }
+        .preview-section h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .preview-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            word-wrap: break-word;
+            background-color: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .result-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 30px;
+            text-align: center;
+            margin-top: 0;
+        }
+        .result-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        .generated-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2c3e50;
+            word-wrap: break-word;
+            background-color: rgba(255,255,255,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .copy-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        .copy-btn:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+        }
+        .copy-success {
+            background-color: #17a2b8 !important;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-top: 15px;
+            font-weight: 600;
+            padding: 10px;
+            background-color: #f8d7da;
+            border-radius: 6px;
+            border: 1px solid #f5c6cb;
+        }
+        .success-message {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 600px) {
+            body {
+                margin: 10px;
+                padding: 10px;
+            }
+            .form-section {
+                padding: 20px;
+            }
+            .btn-container {
+                flex-direction: column;
+            }
+            h1 {
+                font-size: 1.8em;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 千川视频名称生成器 🎬</h1>
+
+        <div class="form-section">
+            <form id="videoNameForm">
+                <div class="form-group">
+                    <label for="accountName">所属账号名称 <span class="required">*</span></label>
+                    <input type="text" id="accountName" name="accountName" placeholder="例如：男主播A" required maxlength="50">
+                </div>
+
+                <div class="form-group">
+                    <label>主打框架 (可选)</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="frameworks" value="信任"><span>信任</span></label>
+                        <label><input type="checkbox" name="frameworks" value="价格"><span>价格</span></label>
+                        <label><input type="checkbox" name="frameworks" value="品质"><span>品质</span></label>
+                        <label><input type="checkbox" name="frameworks" value="情感"><span>情感</span></label>
+                        <label><input type="checkbox" name="frameworks" value="专业"><span>专业</span></label>
+                        <label><input type="checkbox" name="frameworks" value="创意"><span>创意</span></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="plannedPublishDate">预定发布日期 <span class="required">*</span></label>
+                    <input type="date" id="plannedPublishDate" name="plannedPublishDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="scriptName">脚本名称 <span class="required">*</span></label>
+                    <textarea id="scriptName" name="scriptName" placeholder="例如：Polo衫面料深度解析" required maxlength="100"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editorName">剪辑负责人姓名 (可选)</label>
+                    <input type="text" id="editorName" name="editorName" placeholder="例如：张三" maxlength="20">
+                </div>
+
+                <div class="preview-section" id="previewSection" style="display:none;">
+                    <h3>实时预览：</h3>
+                    <div class="preview-name" id="previewVideoName">填写表单查看实时预览...</div>
+                </div>
+
+                <div class="btn-container">
+                    <button type="submit" class="btn-primary" id="generateBtn">
+                        <span id="generateBtnText">生成视频名称</span>
+                    </button>
+                    <button type="button" class="btn-secondary" id="resetBtn">重置表单</button>
+                </div>
+                <div id="errorMessage" class="error-message" style="display:none;"></div>
+                <div id="successMessage" class="success-message" style="display:none;"></div>
+            </form>
+        </div>
+
+        <div class="result-section" id="resultSection" style="display:none;">
+            <h3>生成的视频名称：</h3>
+            <div class="generated-name" id="generatedVideoName"></div>
+            <button id="copyBtn" class="copy-btn">复制到剪贴板</button>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let isGenerating = false;
+        
+        // DOM 元素
+        const form = document.getElementById('videoNameForm');
+        const accountNameInput = document.getElementById('accountName');
+        const frameworksInputs = document.querySelectorAll('input[name="frameworks"]');
+        const plannedPublishDateInput = document.getElementById('plannedPublishDate');
+        const scriptNameInput = document.getElementById('scriptName');
+        const editorNameInput = document.getElementById('editorName');
+        const previewSection = document.getElementById('previewSection');
+        const previewVideoName = document.getElementById('previewVideoName');
+        const generateBtn = document.getElementById('generateBtn');
+        const generateBtnText = document.getElementById('generateBtnText');
+        const resetBtn = document.getElementById('resetBtn');
+        const errorMessageDiv = document.getElementById('errorMessage');
+        const successMessageDiv = document.getElementById('successMessage');
+        const resultSection = document.getElementById('resultSection');
+        const generatedVideoNameDisplay = document.getElementById('generatedVideoName');
+        const copyBtn = document.getElementById('copyBtn');
+
+        // 生成视频名称的核心函数
+        function generateVideoName(accountName, frameworks, plannedPublishDate, scriptName, editorName) {
+            // 1. 账号名称
+            const partAccount = accountName.trim();
+            
+            // 2. 框架
+            let partFramework = '';
+            if (frameworks.length > 0) {
+                partFramework = frameworks.join(',');
+            }
+            
+            // 3. 日期格式化为 YYYYMMDD
+            let partDate = '';
+            if (plannedPublishDate) {
+                const dateParts = plannedPublishDate.split('-');
+                partDate = dateParts.join('');
+            }
+            
+            // 4. 脚本名称
+            const partScript = scriptName.trim();
+            
+            // 5. 剪辑人
+            let partEditor = '';
+            if (editorName && editorName.trim()) {
+                partEditor = editorName.trim();
+            }
+            
+            // 拼接所有部分
+            const parts = [partAccount];
+            if (partFramework) parts.push(partFramework);
+            if (partDate) parts.push(partDate);
+            parts.push(partScript);
+            if (partEditor) parts.push(partEditor);
+            
+            return parts.join('-');
+        }
+
+        // 实时预览更新函数
+        function updatePreview() {
+            const accountName = accountNameInput.value;
+            const frameworks = Array.from(frameworksInputs).filter(cb => cb.checked).map(cb => cb.value);
+            const plannedPublishDate = plannedPublishDateInput.value;
+            const scriptName = scriptNameInput.value;
+            const editorName = editorNameInput.value;
+            
+            // 检查是否有任何输入
+            const hasAnyInput = accountName || frameworks.length > 0 || plannedPublishDate || scriptName || editorName;
+            
+            if (hasAnyInput) {
+                previewSection.style.display = 'block';
+                
+                // 生成预览（即使不完整）
+                if (accountName && plannedPublishDate && scriptName) {
+                    const previewName = generateVideoName(accountName, frameworks, plannedPublishDate, scriptName, editorName);
+                    previewVideoName.textContent = previewName;
+                } else {
+                    previewVideoName.textContent = '请填写必填项查看完整预览...';
+                }
+            } else {
+                previewSection.style.display = 'none';
+            }
+        }
+
+        // 表单验证函数
+        function validateForm() {
+            const accountName = accountNameInput.value.trim();
+            const plannedPublishDate = plannedPublishDateInput.value;
+            const scriptName = scriptNameInput.value.trim();
+            
+            // 清除之前的验证状态
+            [accountNameInput, plannedPublishDateInput, scriptNameInput].forEach(input => {
+                input.classList.remove('input-valid', 'input-invalid');
+            });
+            
+            let isValid = true;
+            let errorMessages = [];
+            
+            // 验证账号名称
+            if (!accountName) {
+                accountNameInput.classList.add('input-invalid');
+                errorMessages.push('请填写账号名称');
+                isValid = false;
+            } else if (accountName.length < 2) {
+                accountNameInput.classList.add('input-invalid');
+                errorMessages.push('账号名称至少需要2个字符');
+                isValid = false;
+            } else {
+                accountNameInput.classList.add('input-valid');
+            }
+            
+            // 验证发布日期
+            if (!plannedPublishDate) {
+                plannedPublishDateInput.classList.add('input-invalid');
+                errorMessages.push('请选择发布日期');
+                isValid = false;
+            } else {
+                const selectedDate = new Date(plannedPublishDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (selectedDate < today) {
+                    plannedPublishDateInput.classList.add('input-invalid');
+                    errorMessages.push('发布日期不能早于今天');
+                    isValid = false;
+                } else {
+                    plannedPublishDateInput.classList.add('input-valid');
+                }
+            }
+            
+            // 验证脚本名称
+            if (!scriptName) {
+                scriptNameInput.classList.add('input-invalid');
+                errorMessages.push('请填写脚本名称');
+                isValid = false;
+            } else if (scriptName.length < 3) {
+                scriptNameInput.classList.add('input-invalid');
+                errorMessages.push('脚本名称至少需要3个字符');
+                isValid = false;
+            } else {
+                scriptNameInput.classList.add('input-valid');
+            }
+            
+            return { isValid, errorMessages };
+        }
+
+        // 显示消息函数
+        function showMessage(message, type = 'error') {
+            hideMessages();
+            
+            if (type === 'error') {
+                errorMessageDiv.textContent = message;
+                errorMessageDiv.style.display = 'block';
+            } else if (type === 'success') {
+                successMessageDiv.textContent = message;
+                successMessageDiv.style.display = 'block';
+            }
+            
+            // 3秒后自动隐藏成功消息
+            if (type === 'success') {
+                setTimeout(hideMessages, 3000);
+            }
+        }
+
+        // 隐藏消息函数
+        function hideMessages() {
+            errorMessageDiv.style.display = 'none';
+            successMessageDiv.style.display = 'none';
+        }
+
+        // 设置加载状态
+        function setLoadingState(loading) {
+            isGenerating = loading;
+            
+            if (loading) {
+                generateBtn.classList.add('loading');
+                generateBtnText.innerHTML = '<span class="spinner"></span>生成中...';
+                form.classList.add('loading');
+            } else {
+                generateBtn.classList.remove('loading');
+                generateBtnText.textContent = '生成视频名称';
+                form.classList.remove('loading');
+            }
+        }
+
+        // 复制到剪贴板函数
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                copyBtn.textContent = '已复制！';
+                copyBtn.classList.add('copy-success');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = '复制到剪贴板';
+                    copyBtn.classList.remove('copy-success');
+                }, 2000);
+                
+                showMessage('视频名称已复制到剪贴板！', 'success');
+            } catch (err) {
+                // 降级方案
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    showMessage('视频名称已复制到剪贴板！', 'success');
+                } catch (fallbackErr) {
+                    showMessage('复制失败，请手动复制', 'error');
+                }
+                
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // 重置表单函数
+        function resetForm() {
+            form.reset();
+            hideMessages();
+            previewSection.style.display = 'none';
+            resultSection.style.display = 'none';
+            
+            // 清除验证状态
+            [accountNameInput, plannedPublishDateInput, scriptNameInput].forEach(input => {
+                input.classList.remove('input-valid', 'input-invalid');
+            });
+            
+            // 设置默认日期为今天
+            const today = new Date().toISOString().split('T')[0];
+            plannedPublishDateInput.value = today;
+            
+            showMessage('表单已重置', 'success');
+        }
+
+        // 事件监听器
+        
+        // 表单提交事件
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            if (isGenerating) return;
+            
+            const validation = validateForm();
+            
+            if (!validation.isValid) {
+                showMessage(validation.errorMessages.join('；'), 'error');
+                return;
+            }
+            
+            setLoadingState(true);
+            hideMessages();
+            
+            // 模拟生成过程（添加一点延迟以显示加载状态）
+            setTimeout(() => {
+                const accountName = accountNameInput.value;
+                const frameworks = Array.from(frameworksInputs).filter(cb => cb.checked).map(cb => cb.value);
+                const plannedPublishDate = plannedPublishDateInput.value;
+                const scriptName = scriptNameInput.value;
+                const editorName = editorNameInput.value;
+                
+                const generatedName = generateVideoName(accountName, frameworks, plannedPublishDate, scriptName, editorName);
+                
+                // 显示结果
+                generatedVideoNameDisplay.textContent = generatedName;
+                resultSection.style.display = 'block';
+                resultSection.classList.add('fade-in');
+                
+                // 滚动到结果区域
+                resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                setLoadingState(false);
+                showMessage('视频名称生成成功！', 'success');
+            }, 800);
+        });
+        
+        // 实时预览事件监听
+        [accountNameInput, plannedPublishDateInput, scriptNameInput, editorNameInput].forEach(input => {
+            input.addEventListener('input', updatePreview);
+        });
+        
+        frameworksInputs.forEach(checkbox => {
+            checkbox.addEventListener('change', updatePreview);
+        });
+        
+        // 重置按钮事件
+        resetBtn.addEventListener('click', resetForm);
+        
+        // 复制按钮事件
+        copyBtn.addEventListener('click', function() {
+            const textToCopy = generatedVideoNameDisplay.textContent;
+            if (textToCopy) {
+                copyToClipboard(textToCopy);
+            }
+        });
+        
+        // 输入验证事件（实时反馈）
+        [accountNameInput, plannedPublishDateInput, scriptNameInput].forEach(input => {
+            input.addEventListener('blur', function() {
+                // 只在有输入时进行验证
+                if (this.value.trim()) {
+                    validateForm();
+                }
+            });
+        });
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置默认日期为今天
+            const today = new Date().toISOString().split('T')[0];
+            plannedPublishDateInput.value = today;
+            
+            // 聚焦到第一个输入框
+            accountNameInput.focus();
+        });
+        
+        // 键盘快捷键支持
+        document.addEventListener('keydown', function(event) {
+            // Ctrl+Enter 快速生成
+            if (event.ctrlKey && event.key === 'Enter') {
+                event.preventDefault();
+                if (!isGenerating) {
+                    form.dispatchEvent(new Event('submit'));
+                }
+            }
+            
+            // Ctrl+R 重置表单
+            if (event.ctrlKey && event.key === 'r') {
+                event.preventDefault();
+                resetForm();
+            }
+        });
+    </script>
+
+</body>
+</html>
